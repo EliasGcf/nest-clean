@@ -21,3 +21,11 @@ services:
       - 6379:6379
     volumes:
       - ./data/redis:/data
+
+  # app:
+  #   container_name: nest-clean-app
+  #   image: 05-nest-clean:openshift
+  #   ports:
+  #     - 3333:3333
+  #   env_file:
+  #     - .env

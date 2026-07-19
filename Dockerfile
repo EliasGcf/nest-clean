@@ -27,7 +27,11 @@ RUN pnpm build
 
 FROM deps AS prod-deps
 
-RUN pnpm prune --prod && \
+RUN PRISMA_VERSION=$(node -p "require('prisma/package.json').version") && \
+    npm pkg delete devDependencies.prisma && \
+    pnpm prune --prod && \
+    pnpm add "prisma@${PRISMA_VERSION}" --prod --ignore-scripts && \
+    pnpm prisma generate && \
     pnpm store prune && \
     rm -rf ~/.local/share/pnpm/store ~/.cache/pnpm
 
@@ -37,6 +41,7 @@ WORKDIR /opt/app
 
 ENV NODE_ENV=production
 ENV PORT=3333
+ENV NPM_CONFIG_CACHE=/tmp/.npm
 
 LABEL io.openshift.expose-services="3333:http" \
       io.openshift.tags="nodejs,nestjs" \
